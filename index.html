@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Calculadora de Huella de Carbono</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+      background-color: #f4f4f4;
+    }
+    h1 { color: #2e7d32; }
+    label { display: block; margin-top: 10px; }
+    input, select {
+      padding: 5px;
+      margin-top: 5px;
+      width: 100%;
+      max-width: 300px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #2e7d32;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    #resultado {
+      margin-top: 30px;
+      padding: 20px;
+      background: white;
+      border-left: 5px solid #2e7d32;
+    }
+  </style>
+</head>
+<body>
+
+<h1>🌿 Calculadora de Huella de Carbono Personal</h1>
+
+<form id="formHuella">
+  <h3>🏠 Hogar</h3>
+  <label>Consumo mensual de electricidad (kWh):
+    <input type="number" id="electricidad" value="100">
+  </label>
+  <label>¿Usas gas para cocinar?
+    <select id="gas">
+      <option value="0">No</option>
+      <option value="1">Sí</option>
+    </select>
+  </label>
+
+  <h3>🚗 Transporte</h3>
+  <label>Kilómetros en carro por semana:
+    <input type="number" id="kmCarro" value="50">
+  </label>
+  <label>Número de vuelos cortos al año:
+    <input type="number" id="vuelosCortos" value="2">
+  </label>
+  <label>Número de vuelos largos al año:
+    <input type="number" id="vuelosLargos" value="1">
+  </label>
+
+  <h3>🍽️ Alimentación</h3>
+  <label>Tipo de dieta:
+    <select id="dieta">
+      <option value="2.5">Omnívora</option>
+      <option value="2">Poca carne</option>
+      <option value="1.5">Vegetariana</option>
+      <option value="1">Vegana</option>
+    </select>
+  </label>
+
+  <h3>🛍️ Consumo</h3>
+  <label>¿Compras ropa/electrónicos cada mes?
+    <select id="consumo">
+      <option value="0.3">Sí</option>
+      <option value="0.1">No</option>
+    </select>
+  </label>
+
+  <button type="button" onclick="calcularHuella()">Calcular Huella</button>
+</form>
+
+<div id="resultado" style="display: none;"></div>
+
+<script>
+  function calcularHuella() {
+    let electricidad = parseFloat(document.getElementById('electricidad').value) * 0.0005 * 12;
+    let gas = parseFloat(document.getElementById('gas').value) * 0.3;
+    let kmCarro = parseFloat(document.getElementById('kmCarro').value) * 0.2 * 52 / 1000;
+    let vuelosC = parseFloat(document.getElementById('vuelosCortos').value) * 0.25;
+    let vuelosL = parseFloat(document.getElementById('vuelosLargos').value) * 0.5;
+    let dieta = parseFloat(document.getElementById('dieta').value);
+    let consumo = parseFloat(document.getElementById('consumo').value);
+
+    let total = electricidad + gas + kmCarro + vuelosC + vuelosL + dieta + consumo;
+    let nivel = total < 2 ? "🌱 Baja" : total < 6 ? "⚠️ Media" : "🔥 Alta";
+
+    document.getElementById('resultado').style.display = 'block';
+    document.getElementById('resultado').innerHTML = `
+      <h3>Resultado:</h3>
+      <p><strong>Total estimado:</strong> ${total.toFixed(2)} toneladas de CO₂e/año</p>
+      <p><strong>Nivel de huella:</strong> ${nivel}</p>
+      <p><em>Considera reducir vuelos, optimizar energía o adoptar una dieta con menor impacto para mejorar tu huella.</em></p>
+    `;
+  }
+</script>
+
+</body>
+</html>
