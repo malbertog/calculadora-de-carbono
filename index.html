@@ -31,6 +31,12 @@
       background: white;
       border-left: 5px solid #2e7d32;
     }
+    #explicacionFormula {
+      margin-top: 40px;
+      padding: 20px;
+      background: #e8f5e9;
+      border-left: 5px solid #2e7d32;
+    }
   </style>
 </head>
 <body>
@@ -83,6 +89,25 @@
 
 <div id="resultado" style="display: none;"></div>
 
+<div id="explicacionFormula" style="display: none;">
+  <h3>📘 Cómo se calcula tu huella de carbono:</h3>
+  <p>La calculadora estima tu huella de carbono anual en toneladas de CO₂e (equivalente de dióxido de carbono) utilizando los siguientes factores:</p>
+  <ul>
+    <li><strong>Electricidad:</strong> Consumo mensual multiplicado por 0.0005 toneladas por kWh y ajustado a 12 meses.</li>
+    <li><strong>Gas:</strong> Uso de gas para cocinar multiplicado por 0.3 toneladas.</li>
+    <li><strong>Transporte:</strong> Kilómetros en carro por semana multiplicados por 0.2 toneladas por km, ajustados a 52 semanas y dividido por 1000.</li>
+    <li><strong>Vuelos:</strong> Vuelos cortos multiplicados por 0.25 toneladas y vuelos largos por 0.5 toneladas.</li>
+    <li><strong>Alimentación:</strong> Tipo de dieta con valores predefinidos (Omnívora: 2.5, Poca carne: 2, Vegetariana: 1.5, Vegana: 1).</li>
+    <li><strong>Consumo:</strong> Compras mensuales de ropa/electrónicos multiplicadas por 0.3 toneladas (Sí) o 0.1 toneladas (No).</li>
+  </ul>
+  <p>El total se clasifica en niveles de impacto:</p>
+  <ul>
+    <li><strong>🌱 Baja:</strong> Menos de 2 toneladas.</li>
+    <li><strong>⚠️ Media:</strong> Entre 2 y 6 toneladas.</li>
+    <li><strong>🔥 Alta:</strong> Más de 6 toneladas.</li>
+  </ul>
+</div>
+
 <script>
   function calcularHuella() {
     let electricidad = parseFloat(document.getElementById('electricidad').value) * 0.0005 * 12;
@@ -103,6 +128,8 @@
       <p><strong>Nivel de huella:</strong> ${nivel}</p>
       <p><em>Considera reducir vuelos, optimizar energía o adoptar una dieta con menor impacto para mejorar tu huella.</em></p>
     `;
+
+    document.getElementById('explicacionFormula').style.display = 'block';
   }
 </script>
 
