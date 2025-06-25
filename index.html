@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Calculadora de Huella de Carbono</title>
+  <title>Calculadora de Huella de Carbono Industrial</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -41,47 +41,41 @@
 </head>
 <body>
 
-<h1>🌿 Calculadora de Huella de Carbono Personal</h1>
+<h1>🏭 Calculadora de Huella de Carbono Industrial</h1>
 
 <form id="formHuella">
-  <h3>🏠 Hogar</h3>
-  <label>Consumo mensual de electricidad (kWh):
+  <h3>⚡ Energía</h3>
+  <label>Consumo mensual de electricidad (MWh):
     <input type="number" id="electricidad" value="100">
   </label>
-  <label>¿Usas gas para cocinar?
-    <select id="gas">
-      <option value="0">No</option>
-      <option value="1">Sí</option>
+  <label>Consumo mensual de gas natural (m³):
+    <input type="number" id="gasNatural" value="500">
+  </label>
+
+  <h3>🚚 Transporte</h3>
+  <label>Kilómetros recorridos por transporte de mercancías al mes:
+    <input type="number" id="kmTransporte" value="1000">
+  </label>
+  <label>Tipo de transporte:
+    <select id="tipoTransporte">
+      <option value="0.2">Camión</option>
+      <option value="0.1">Tren</option>
+      <option value="0.5">Avión</option>
+      <option value="0.05">Barco</option>
     </select>
   </label>
 
-  <h3>🚗 Transporte</h3>
-  <label>Kilómetros en carro por semana:
-    <input type="number" id="kmCarro" value="50">
+  <h3>♻️ Residuos</h3>
+  <label>Cantidad de residuos generados al mes (toneladas):
+    <input type="number" id="residuos" value="10">
   </label>
-  <label>Número de vuelos cortos al año:
-    <input type="number" id="vuelosCortos" value="2">
-  </label>
-  <label>Número de vuelos largos al año:
-    <input type="number" id="vuelosLargos" value="1">
+  <label>Porcentaje reciclado (%):
+    <input type="number" id="reciclado" value="50">
   </label>
 
-  <h3>🍽️ Alimentación</h3>
-  <label>Tipo de dieta:
-    <select id="dieta">
-      <option value="2.5">Omnívora</option>
-      <option value="2">Poca carne</option>
-      <option value="1.5">Vegetariana</option>
-      <option value="1">Vegana</option>
-    </select>
-  </label>
-
-  <h3>🛍️ Consumo</h3>
-  <label>¿Compras ropa/electrónicos cada mes?
-    <select id="consumo">
-      <option value="0.3">Sí</option>
-      <option value="0.1">No</option>
-    </select>
+  <h3>🏗️ Producción</h3>
+  <label>Emisiones directas de procesos industriales (toneladas CO₂e):
+    <input type="number" id="emisionesDirectas" value="20">
   </label>
 
   <button type="button" onclick="calcularHuella()">Calcular Huella</button>
@@ -91,42 +85,33 @@
 
 <div id="explicacionFormula" style="display: none;">
   <h3>📘 Cómo se calcula tu huella de carbono:</h3>
-  <p>La calculadora estima tu huella de carbono anual en toneladas de CO₂e (equivalente de dióxido de carbono) utilizando los siguientes factores:</p>
+  <p>La calculadora estima tu huella de carbono anual en toneladas de CO₂e utilizando los siguientes factores:</p>
   <ul>
     <li><strong>Electricidad:</strong> Consumo mensual multiplicado por 0.0005 toneladas por kWh y ajustado a 12 meses.</li>
-    <li><strong>Gas:</strong> Uso de gas para cocinar multiplicado por 0.3 toneladas.</li>
-    <li><strong>Transporte:</strong> Kilómetros en carro por semana multiplicados por 0.2 toneladas por km, ajustados a 52 semanas y dividido por 1000.</li>
-    <li><strong>Vuelos:</strong> Vuelos cortos multiplicados por 0.25 toneladas y vuelos largos por 0.5 toneladas.</li>
-    <li><strong>Alimentación:</strong> Tipo de dieta con valores predefinidos (Omnívora: 2.5, Poca carne: 2, Vegetariana: 1.5, Vegana: 1).</li>
-    <li><strong>Consumo:</strong> Compras mensuales de ropa/electrónicos multiplicadas por 0.3 toneladas (Sí) o 0.1 toneladas (No).</li>
-  </ul>
-  <p>El total se clasifica en niveles de impacto:</p>
-  <ul>
-    <li><strong>🌱 Baja:</strong> Menos de 2 toneladas.</li>
-    <li><strong>⚠️ Media:</strong> Entre 2 y 6 toneladas.</li>
-    <li><strong>🔥 Alta:</strong> Más de 6 toneladas.</li>
+    <li><strong>Gas natural:</strong> Consumo mensual multiplicado por 0.002 toneladas por m³ y ajustado a 12 meses.</li>
+    <li><strong>Transporte:</strong> Kilómetros recorridos multiplicados por el factor de emisión según el tipo de transporte.</li>
+    <li><strong>Residuos:</strong> Residuos generados ajustados por el porcentaje reciclado.</li>
+    <li><strong>Producción:</strong> Emisiones directas de procesos industriales.</li>
   </ul>
 </div>
 
 <script>
   function calcularHuella() {
-    let electricidad = parseFloat(document.getElementById('electricidad').value) * 0.0005 * 12;
-    let gas = parseFloat(document.getElementById('gas').value) * 0.3;
-    let kmCarro = parseFloat(document.getElementById('kmCarro').value) * 0.2 * 52 / 1000;
-    let vuelosC = parseFloat(document.getElementById('vuelosCortos').value) * 0.25;
-    let vuelosL = parseFloat(document.getElementById('vuelosLargos').value) * 0.5;
-    let dieta = parseFloat(document.getElementById('dieta').value);
-    let consumo = parseFloat(document.getElementById('consumo').value);
+    let electricidad = parseFloat(document.getElementById('electricidad').value) * 0.0005 * 1000 * 12;
+    let gasNatural = parseFloat(document.getElementById('gasNatural').value) * 0.002 * 12;
+    let kmTransporte = parseFloat(document.getElementById('kmTransporte').value) * parseFloat(document.getElementById('tipoTransporte').value) * 12;
+    let residuos = parseFloat(document.getElementById('residuos').value) * (1 - parseFloat(document.getElementById('reciclado').value) / 100) * 12;
+    let emisionesDirectas = parseFloat(document.getElementById('emisionesDirectas').value);
 
-    let total = electricidad + gas + kmCarro + vuelosC + vuelosL + dieta + consumo;
-    let nivel = total < 2 ? "🌱 Baja" : total < 6 ? "⚠️ Media" : "🔥 Alta";
+    let total = electricidad + gasNatural + kmTransporte + residuos + emisionesDirectas;
+    let nivel = total < 50 ? "🌱 Baja" : total < 200 ? "⚠️ Media" : "🔥 Alta";
 
     document.getElementById('resultado').style.display = 'block';
     document.getElementById('resultado').innerHTML = `
       <h3>Resultado:</h3>
       <p><strong>Total estimado:</strong> ${total.toFixed(2)} toneladas de CO₂e/año</p>
       <p><strong>Nivel de huella:</strong> ${nivel}</p>
-      <p><em>Considera reducir vuelos, optimizar energía o adoptar una dieta con menor impacto para mejorar tu huella.</em></p>
+      <p><em>Considera optimizar procesos, reducir transporte o mejorar el reciclaje para disminuir tu huella.</em></p>
     `;
 
     document.getElementById('explicacionFormula').style.display = 'block';
