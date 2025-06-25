@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Calculadora de Huella de Carbono Industrial</title>
+  <title>Calculadora de Huella de Carbono AFOLU</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -41,41 +41,36 @@
 </head>
 <body>
 
-<h1>🏭 Calculadora de Huella de Carbono Industrial</h1>
+<h1>🌾 Calculadora de Huella de Carbono AFOLU</h1>
 
 <form id="formHuella">
-  <h3>⚡ Energía</h3>
-  <label>Consumo mensual de electricidad (MWh):
-    <input type="number" id="electricidad" value="100">
+  <h3>🌳 Uso de la tierra</h3>
+  <label>Área deforestada al año (hectáreas):
+    <input type="number" id="deforestacion" value="10">
   </label>
-  <label>Consumo mensual de gas natural (m³):
-    <input type="number" id="gasNatural" value="500">
-  </label>
-
-  <h3>🚚 Transporte</h3>
-  <label>Kilómetros recorridos por transporte de mercancías al mes:
-    <input type="number" id="kmTransporte" value="1000">
-  </label>
-  <label>Tipo de transporte:
-    <select id="tipoTransporte">
-      <option value="0.2">Camión</option>
-      <option value="0.1">Tren</option>
-      <option value="0.5">Avión</option>
-      <option value="0.05">Barco</option>
-    </select>
+  <label>Área reforestada al año (hectáreas):
+    <input type="number" id="reforestacion" value="5">
   </label>
 
-  <h3>♻️ Residuos</h3>
-  <label>Cantidad de residuos generados al mes (toneladas):
-    <input type="number" id="residuos" value="10">
+  <h3>🌾 Agricultura</h3>
+  <label>Producción anual de cultivos (toneladas):
+    <input type="number" id="cultivos" value="100">
   </label>
-  <label>Porcentaje reciclado (%):
-    <input type="number" id="reciclado" value="50">
+  <label>Uso de fertilizantes químicos (kg):
+    <input type="number" id="fertilizantes" value="500">
   </label>
 
-  <h3>🏗️ Producción</h3>
-  <label>Emisiones directas de procesos industriales (toneladas CO₂e):
-    <input type="number" id="emisionesDirectas" value="20">
+  <h3>🐄 Ganadería</h3>
+  <label>Número de cabezas de ganado:
+    <input type="number" id="ganado" value="50">
+  </label>
+
+  <h3>🌱 Manejo del suelo</h3>
+  <label>Área de suelo manejada (hectáreas):
+    <input type="number" id="suelo" value="20">
+  </label>
+  <label>Prácticas de manejo sostenible (%):
+    <input type="number" id="manejoSostenible" value="50">
   </label>
 
   <button type="button" onclick="calcularHuella()">Calcular Huella</button>
@@ -87,23 +82,24 @@
   <h3>📘 Cómo se calcula tu huella de carbono:</h3>
   <p>La calculadora estima tu huella de carbono anual en toneladas de CO₂e utilizando los siguientes factores:</p>
   <ul>
-    <li><strong>Electricidad:</strong> Consumo mensual multiplicado por 0.0005 toneladas por kWh y ajustado a 12 meses.</li>
-    <li><strong>Gas natural:</strong> Consumo mensual multiplicado por 0.002 toneladas por m³ y ajustado a 12 meses.</li>
-    <li><strong>Transporte:</strong> Kilómetros recorridos multiplicados por el factor de emisión según el tipo de transporte.</li>
-    <li><strong>Residuos:</strong> Residuos generados ajustados por el porcentaje reciclado.</li>
-    <li><strong>Producción:</strong> Emisiones directas de procesos industriales.</li>
+    <li><strong>Deforestación:</strong> Área deforestada multiplicada por 20 toneladas de CO₂e por hectárea.</li>
+    <li><strong>Reforestación:</strong> Área reforestada multiplicada por -15 toneladas de CO₂e por hectárea.</li>
+    <li><strong>Agricultura:</strong> Producción de cultivos multiplicada por 0.1 toneladas de CO₂e por tonelada, más fertilizantes multiplicados por 0.005 toneladas de CO₂e por kg.</li>
+    <li><strong>Ganadería:</strong> Número de cabezas de ganado multiplicado por 0.3 toneladas de CO₂e por cabeza.</li>
+    <li><strong>Manejo del suelo:</strong> Área manejada multiplicada por 0.2 toneladas de CO₂e por hectárea, ajustada por el porcentaje de prácticas sostenibles.</li>
   </ul>
 </div>
 
 <script>
   function calcularHuella() {
-    let electricidad = parseFloat(document.getElementById('electricidad').value) * 0.0005 * 1000 * 12;
-    let gasNatural = parseFloat(document.getElementById('gasNatural').value) * 0.002 * 12;
-    let kmTransporte = parseFloat(document.getElementById('kmTransporte').value) * parseFloat(document.getElementById('tipoTransporte').value) * 12;
-    let residuos = parseFloat(document.getElementById('residuos').value) * (1 - parseFloat(document.getElementById('reciclado').value) / 100) * 12;
-    let emisionesDirectas = parseFloat(document.getElementById('emisionesDirectas').value);
+    let deforestacion = parseFloat(document.getElementById('deforestacion').value) * 20;
+    let reforestacion = parseFloat(document.getElementById('reforestacion').value) * -15;
+    let cultivos = parseFloat(document.getElementById('cultivos').value) * 0.1;
+    let fertilizantes = parseFloat(document.getElementById('fertilizantes').value) * 0.005;
+    let ganado = parseFloat(document.getElementById('ganado').value) * 0.3;
+    let suelo = parseFloat(document.getElementById('suelo').value) * 0.2 * (1 - parseFloat(document.getElementById('manejoSostenible').value) / 100);
 
-    let total = electricidad + gasNatural + kmTransporte + residuos + emisionesDirectas;
+    let total = deforestacion + reforestacion + cultivos + fertilizantes + ganado + suelo;
     let nivel = total < 50 ? "🌱 Baja" : total < 200 ? "⚠️ Media" : "🔥 Alta";
 
     document.getElementById('resultado').style.display = 'block';
@@ -111,7 +107,7 @@
       <h3>Resultado:</h3>
       <p><strong>Total estimado:</strong> ${total.toFixed(2)} toneladas de CO₂e/año</p>
       <p><strong>Nivel de huella:</strong> ${nivel}</p>
-      <p><em>Considera optimizar procesos, reducir transporte o mejorar el reciclaje para disminuir tu huella.</em></p>
+      <p><em>Considera implementar prácticas sostenibles, reducir deforestación o aumentar reforestación para disminuir tu huella.</em></p>
     `;
 
     document.getElementById('explicacionFormula').style.display = 'block';
