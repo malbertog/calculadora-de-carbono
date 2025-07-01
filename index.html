@@ -91,13 +91,18 @@
 </div>
 
 <script>
+  function getNumber(id) {
+    const value = parseFloat(document.getElementById(id).value);
+    return isNaN(value) ? 0 : value;
+  }
+
   function calcularHuella() {
-    let deforestacion = parseFloat(document.getElementById('deforestacion').value) * 20;
-    let reforestacion = parseFloat(document.getElementById('reforestacion').value) * -15;
-    let cultivos = parseFloat(document.getElementById('cultivos').value) * 0.1;
-    let fertilizantes = parseFloat(document.getElementById('fertilizantes').value) * 0.005;
-    let ganado = parseFloat(document.getElementById('ganado').value) * 0.3;
-    let suelo = parseFloat(document.getElementById('suelo').value) * 0.2 * (1 - parseFloat(document.getElementById('manejoSostenible').value) / 100);
+    let deforestacion = getNumber('deforestacion') * 20;
+    let reforestacion = getNumber('reforestacion') * -15;
+    let cultivos = getNumber('cultivos') * 0.1;
+    let fertilizantes = getNumber('fertilizantes') * 0.005;
+    let ganado = getNumber('ganado') * 0.3;
+    let suelo = getNumber('suelo') * 0.2 * (1 - getNumber('manejoSostenible') / 100);
 
     let total = deforestacion + reforestacion + cultivos + fertilizantes + ganado + suelo;
     let nivel = total < 50 ? "🌱 Baja" : total < 200 ? "⚠️ Media" : "🔥 Alta";
