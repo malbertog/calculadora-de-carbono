@@ -10,7 +10,12 @@
     label { display: block; margin-top: 10px; }
     input[type="number"] { width: 150px; padding: 5px; }
     .output { font-weight: bold; margin-top: 10px; }
+    .explanation { font-size: 0.9em; color: #555; margin-top: 5px; }
     button { padding: 10px 15px; margin-top: 20px; }
+    .help-button { background-color: #3498db; color: white; border: none; padding: 5px 10px; cursor: pointer; margin-top: 10px; }
+    dialog { border: none; border-radius: 10px; padding: 20px; width: 400px; max-width: 90%; box-shadow: 0 0 20px rgba(0,0,0,0.3); }
+    dialog::backdrop { background: rgba(0, 0, 0, 0.4); }
+    .close-button { background-color: #e74c3c; color: white; border: none; padding: 5px 10px; cursor: pointer; float: right; }
   </style>
 </head>
 <body>
@@ -18,119 +23,136 @@
   <h1>Calculadora de Huella de Carbono Industrial</h1>
 
   <form id="carbonForm">
-
-    <!-- Producción de cemento -->
     <div class="sector">
       <h2>Producción de Cemento</h2>
+      <button type="button" class="help-button" onclick="mostrarAyuda('cemento')">¿Dónde obtengo estos datos?</button>
       <label>Producción de clinca (ton): <input type="number" id="clinker" step="0.01"></label>
       <label>Contenido de CaO en clinca (%): <input type="number" id="caoContent" step="0.01" value="65"></label>
       <label>Factor de corrección por CKD (por defecto 1.02): <input type="number" id="ckd" step="0.01" value="1.02"></label>
+      <div class="explanation">Se calcula como: Emisiones = 0.785 × CaO × Producción de clinca × CKD.</div>
       <div class="output">Emisiones de CO₂: <span id="cementCO2">0</span> tCO₂</div>
     </div>
 
-    <!-- Producción de cal -->
     <div class="sector">
       <h2>Producción de Cal</h2>
+      <button type="button" class="help-button" onclick="mostrarAyuda('cal')">¿Dónde obtengo estos datos?</button>
       <label>Producción total (ton): <input type="number" id="lime" step="0.01"></label>
+      <div class="explanation">Se estima como: Emisiones = Producción × 0.79</div>
       <div class="output">Emisiones de CO₂: <span id="limeCO2">0</span> tCO₂</div>
     </div>
 
-    <!-- Industria siderúrgica -->
     <div class="sector">
       <h2>Industria Siderúrgica</h2>
+      <button type="button" class="help-button" onclick="mostrarAyuda('siderurgia')">¿Dónde obtengo estos datos?</button>
       <label>Cantidad de agente reductor (ton): <input type="number" id="steel" step="0.01"></label>
+      <div class="explanation">Emisiones estimadas como: Cantidad × 1.8</div>
       <div class="output">Emisiones de CO₂: <span id="steelCO2">0</span> tCO₂</div>
     </div>
 
-    <!-- Ácido nítrico/adípico -->
     <div class="sector">
       <h2>Producción de Ácido Nítrico/Adípico</h2>
+      <button type="button" class="help-button" onclick="mostrarAyuda('acido')">¿Dónde obtengo estos datos?</button>
       <label>Producción total (ton): <input type="number" id="acid" step="0.01"></label>
+      <div class="explanation">Se calcula como: Producción × 8.1</div>
       <div class="output">Emisiones de N₂O: <span id="acidN2O">0</span> tCO₂e</div>
     </div>
 
-    <!-- Aluminio -->
     <div class="sector">
       <h2>Producción de Aluminio Primario</h2>
+      <button type="button" class="help-button" onclick="mostrarAyuda('aluminio')">¿Dónde obtengo estos datos?</button>
       <label>Producción (ton): <input type="number" id="aluminum" step="0.01"></label>
+      <div class="explanation">Producción × 1.5</div>
       <div class="output">Emisiones de PFC: <span id="aluminumPFC">0</span> tCO₂e</div>
     </div>
 
-    <!-- Equipos eléctricos -->
     <div class="sector">
       <h2>Equipos Eléctricos (SF₆)</h2>
+      <button type="button" class="help-button" onclick="mostrarAyuda('sf6')">¿Dónde obtengo estos datos?</button>
       <label>Inventario de SF₆ (kg): <input type="number" id="sf6" step="0.01"></label>
       <label>Tasa de fuga anual (%): <input type="number" id="sf6Leak" value="5"></label>
+      <div class="explanation">Inventario × Tasa de fuga × 23,500 / 1000</div>
       <div class="output">Emisiones de SF₆: <span id="sf6CO2e">0</span> tCO₂e</div>
     </div>
 
-    <!-- Refrigeración y A/C -->
     <div class="sector">
       <h2>Refrigeración y Aire Acondicionado (HFCs)</h2>
+      <button type="button" class="help-button" onclick="mostrarAyuda('hfc')">¿Dónde obtengo estos datos?</button>
       <label>Carga de HFCs (kg): <input type="number" id="hfc" step="0.01"></label>
       <label>Tasa de fuga (%): <input type="number" id="hfcLeak" value="10"></label>
+      <div class="explanation">Carga × Tasa de fuga × 1430 / 1000</div>
       <div class="output">Emisiones de HFC: <span id="hfcCO2e">0</span> tCO₂e</div>
     </div>
 
-    <!-- Total -->
     <button type="button" onclick="calcularEmisiones()">Calcular Huella Total</button>
     <h2>Huella Total de Carbono: <span id="totalCO2e">0</span> tCO₂e</h2>
+    <div class="explanation">Es la suma de todas las emisiones anteriores.</div>
   </form>
 
+  <dialog id="ayudaDialog">
+    <button class="close-button" onclick="document.getElementById('ayudaDialog').close()">X</button>
+    <p id="ayudaTexto"></p>
+  </dialog>
+
   <script>
+    function mostrarAyuda(seccion) {
+      const mensajes = {
+        cemento: "Consigue estos datos en los informes de producción de cemento de la planta o en estadísticas nacionales. La clinca es el componente intermedio en la producción de cemento. El contenido de CaO puede obtenerse de análisis químicos de laboratorio.",
+        cal: "Los datos de producción de cal se obtienen de registros de planta o informes del ministerio de industria. Verifica si se usa caliza o dolomita como materia prima.",
+        siderurgia: "La cantidad de agente reductor (carbón o coque) se obtiene de la planta siderúrgica. Se registra en toneladas consumidas anualmente.",
+        acido: "Revisa los reportes de producción química para ácido nítrico o adípico. Estos se encuentran en estadísticas de producción industrial química.",
+        aluminio: "Consulta la producción anual de aluminio primario en toneladas. Generalmente está disponible en los reportes de planta o asociaciones de aluminio.",
+        sf6: "El inventario de SF₆ está en los registros de mantenimiento de equipos eléctricos de alta tensión. La tasa de fuga puede estimarse con base en revisiones técnicas.",
+        hfc: "La carga de HFCs se encuentra en los manuales técnicos de equipos de refrigeración o en registros de mantenimiento. La tasa de fuga es un estimado técnico común (5-15%)."
+      };
+      document.getElementById('ayudaTexto').textContent = mensajes[seccion];
+      document.getElementById('ayudaDialog').showModal();
+    }
+
     function calcularEmisiones() {
-      // Factores de emisión por defecto
       const FE_cemento = 0.785;
-      const FE_lime = 0.79; // CO₂/ton de cal
-      const FE_steel = 1.8; // CO₂/ton de carbón
-      const FE_acid = 8.1; // tCO₂e/ton N₂O
-      const FE_aluminum = 1.5; // tCO₂e/ton
+      const FE_lime = 0.79;
+      const FE_steel = 1.8;
+      const FE_acid = 8.1;
+      const FE_aluminum = 1.5;
       const GWP_SF6 = 23500;
       const GWP_HFC = 1430;
 
-      // Cemento
       const clinker = parseFloat(document.getElementById('clinker').value) || 0;
       const cao = parseFloat(document.getElementById('caoContent').value) / 100 || 0.65;
       const ckd = parseFloat(document.getElementById('ckd').value) || 1.02;
       const cementCO2 = clinker * FE_cemento * cao * ckd;
       document.getElementById('cementCO2').textContent = cementCO2.toFixed(2);
 
-      // Cal
       const lime = parseFloat(document.getElementById('lime').value) || 0;
       const limeCO2 = lime * FE_lime;
       document.getElementById('limeCO2').textContent = limeCO2.toFixed(2);
 
-      // Siderurgia
       const steel = parseFloat(document.getElementById('steel').value) || 0;
       const steelCO2 = steel * FE_steel;
       document.getElementById('steelCO2').textContent = steelCO2.toFixed(2);
 
-      // Ácido
       const acid = parseFloat(document.getElementById('acid').value) || 0;
       const acidN2O = acid * FE_acid;
       document.getElementById('acidN2O').textContent = acidN2O.toFixed(2);
 
-      // Aluminio
       const aluminum = parseFloat(document.getElementById('aluminum').value) || 0;
       const aluminumPFC = aluminum * FE_aluminum;
       document.getElementById('aluminumPFC').textContent = aluminumPFC.toFixed(2);
 
-      // SF6
       const sf6 = parseFloat(document.getElementById('sf6').value) || 0;
       const sf6Leak = parseFloat(document.getElementById('sf6Leak').value) / 100 || 0.05;
       const sf6CO2e = (sf6 * sf6Leak) * GWP_SF6 / 1000;
       document.getElementById('sf6CO2e').textContent = sf6CO2e.toFixed(2);
 
-      // HFCs
       const hfc = parseFloat(document.getElementById('hfc').value) || 0;
       const hfcLeak = parseFloat(document.getElementById('hfcLeak').value) / 100 || 0.1;
       const hfcCO2e = (hfc * hfcLeak) * GWP_HFC / 1000;
       document.getElementById('hfcCO2e').textContent = hfcCO2e.toFixed(2);
 
-      // Total
       const total = cementCO2 + limeCO2 + steelCO2 + acidN2O + aluminumPFC + sf6CO2e + hfcCO2e;
       document.getElementById('totalCO2e').textContent = total.toFixed(2);
     }
   </script>
+
 </body>
 </html>
